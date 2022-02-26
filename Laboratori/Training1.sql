@@ -350,4 +350,3 @@ commit;
 --Solució
 SELECT count(*)
 FROM (SELECT DISTINCT h.hora FROM HABITACIONS h)
-
