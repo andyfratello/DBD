@@ -1,0 +1,54 @@
+/*
+Obtenir tots els empleats amb tots els atributs definits a la jerarquia. Feu-ho SENSE OUTER join i ordeneu el resultat per id (Noteu que "A LEFT JOIN B" és equivalent a "A LEFT OUTER JOIN B", etc. i que, per tant, tampoc es pot utilitzar).
+Pel joc de proves que trobareu al fitxer adjunt, la sortida seria:
+
+1 32 Smith 5 NULL
+2 35 Pan NULL B602
+3 40 Hook 4 C523
+4 12 Darling NULL NULL
+*/
+
+--Fitxer adjunt:
+
+CREATE TABLE Employee(
+id INTEGER PRIMARY KEY,
+age INTEGER,
+name VARCHAR(20));
+
+CREATE TABLE Clerk(
+id INTEGER PRIMARY KEY REFERENCES Employee(id),
+infoAccessLevel INTEGER);
+
+CREATE TABLE Director(
+id INTEGER PRIMARY KEY REFERENCES Employee(id),
+office VARCHAR(5));
+
+INSERT INTO Employee(id, age, name) VALUES (1, 32, 'Smith');
+INSERT INTO Employee(id, age, name) VALUES (2, 35, 'Pan');
+INSERT INTO Employee(id, age, name) VALUES (3, 40, 'Hook');
+INSERT INTO Employee(id, age, name) VALUES (4, 12, 'Darling');
+
+INSERT INTO Clerk(id, infoAccessLevel) VALUES (1, 5);
+INSERT INTO Clerk(id, infoAccessLevel) VALUES (3, 4);
+
+INSERT INTO Director(id, office) VALUES (2, 'B602');
+INSERT INTO Director(id, office) VALUES (3, 'C523');
+
+--Solució:
+
+SELECT Employee.id, Employee.age, Employee.name, Clerk.infoAccessLevel, NULL
+FROM Employee, Clerk
+WHERE Employee.id = Clerk.id  AND Employee.id NOT IN (SELECT Director.id FROM Director)
+UNION
+SELECT Employee.id, Employee.age, Employee.name, NULL, Director.office
+FROM Employee, Director
+WHERE Employee.id = Director.id  AND Employee.id NOT IN (SELECT Clerk.id FROM Clerk)
+UNION
+SELECT Employee.id, Employee.age, Employee.name, Clerk.infoAccessLevel, Director.office
+FROM Employee, Clerk, Director
+WHERE Employee.id = Clerk.id AND Employee.id = Director.id
+UNION
+SELECT Employee.id, Employee.age, Employee.name, NULL, NULL
+FROM Employee
+WHERE Employee.id NOT IN (SELECT Clerk.id FROM Clerk) AND Employee.id NOT IN (SELECT Director.id FROM Director)
+ORDER BY id;
