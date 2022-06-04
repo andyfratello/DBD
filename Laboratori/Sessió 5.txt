@@ -1,0 +1,238 @@
+Ex.1
+
+Donades la taula i les dades al fitxer adjunt, feu el disseny físic de manera que sigui òptima l'execució de la consulta següent:
+
+SELECT IATA1, IATA2 FROM FlyWithMe WHERE price < 20;
+
+Es imprescindible que abans d'iniciar la correcció t'aseguris de:
+
+    Només hi ha d'haver al teu espai els objectes corresponents a aquest enunciat.
+    Buidar completament la paperera de reciclatge ("PURGE RECYCLEBIN").
+    Actualitzar les estadísitiques de tots els objectes (fes servir el bloc de codi que tens al fitxer adjunt).
+
+Fitxer adjunt:
+
+CREATE TABLE FlyWithMe (
+IATA1 CHAR(3), --departure airport
+IATA2 CHAR(3), --destination airport
+passenger INTEGER,
+price INTEGER,
+discount INTEGER
+);
+
+DECLARE 
+i int;
+j int;
+IATA1 CHAR(3);
+IATA2 CHAR(3);
+p int;
+q int;
+
+begin
+DBMS_RANDOM.seed(0);
+for i in 1..200 loop
+	if (i mod 10 != 0) then 
+		IATA1 := 'BCN';
+	else
+		IATA1 := 'GLW';
+	END if;
+	for j in 1..10 loop
+		if (j = 1) then IATA2 := 'HRW'; END if;
+		if (j = 2) then IATA2 := 'PIK'; END if;
+		if (j = 3) then IATA2 := 'LCO'; END if;
+		if (j = 4) then IATA2 := 'FCO'; END if;
+		if (j = 5) then IATA2 := 'HKG'; END if;
+		if (j = 6) then IATA2 := 'PDW'; END if;
+		if (j = 7) then IATA2 := 'AZZ'; END if;
+		if (j = 8) then IATA2 := 'AMS'; END if;
+		if (j = 9) then IATA2 := 'KRW'; END if;
+		if (j = 10) then IATA2 := 'BIO'; END if;
+		p := dbms_random.value(1,1000);
+		q := p mod 90;
+		insert into FlyWithMe values (IATA1, IATA2, p, 1000-p, q);
+	end loop;
+end loop;
+end;
+
+-- Actualitzar estadístiques
+DECLARE
+esquema VARCHAR2(100);
+CURSOR c IS SELECT TABLE_NAME FROM USER_TABLES WHERE TABLE_NAME NOT LIKE 'SHADOW_%';
+BEGIN
+SELECT '"'||sys_context('USERENV', 'CURRENT_SCHEMA')||'"' INTO esquema FROM dual;
+FOR taula IN c LOOP
+  DBMS_STATS.GATHER_TABLE_STATS( 
+    ownname => esquema, 
+    tabname => taula.table_name, 
+    estimate_percent => NULL,
+    method_opt =>'FOR ALL COLUMNS SIZE REPEAT',
+    granularity => 'GLOBAL',
+    cascade => TRUE
+    );
+  END LOOP;
+END;
+
+Solució:
+
+No Index
+
+Ex.2
+
+Donades la taula i les dades al fitxer adjunt, feu el disseny físic de manera que sigui òptima l'execució de la consulta següent:
+
+SELECT * FROM FlyWithMe WHERE price > 1000;
+
+Es imprescindible que abans d'iniciar la correcció t'aseguris de:
+
+    Només hi ha d'haver al teu espai els objectes corresponents a aquest enunciat.
+    Buidar completament la paperera de reciclatge ("PURGE RECYCLEBIN").
+    Actualitzar les estadísitiques de tots els objectes (fes servir el bloc de codi que tens al fitxer adjunt).
+
+Fitxer adjunt:
+
+CREATE TABLE FlyWithMe (
+IATA1 CHAR(3), --departure airport
+IATA2 CHAR(3), --destination airport
+passenger INTEGER,
+price INTEGER,
+discount INTEGER
+);
+
+DECLARE 
+i int;
+j int;
+IATA1 CHAR(3);
+IATA2 CHAR(3);
+p int;
+q int;
+
+begin
+DBMS_RANDOM.seed(0);
+for i in 1..200 loop
+	if (i mod 10 != 0) then 
+		IATA1 := 'BCN';
+	else
+		IATA1 := 'GLW';
+	END if;
+	for j in 1..10 loop
+		if (j = 1) then IATA2 := 'HRW'; END if;
+		if (j = 2) then IATA2 := 'PIK'; END if;
+		if (j = 3) then IATA2 := 'LCO'; END if;
+		if (j = 4) then IATA2 := 'FCO'; END if;
+		if (j = 5) then IATA2 := 'HKG'; END if;
+		if (j = 6) then IATA2 := 'PDW'; END if;
+		if (j = 7) then IATA2 := 'AZZ'; END if;
+		if (j = 8) then IATA2 := 'AMS'; END if;
+		if (j = 9) then IATA2 := 'KRW'; END if;
+		if (j = 10) then IATA2 := 'BIO'; END if;
+		p := dbms_random.value(1,1000);
+		q := p mod 90;
+		insert into FlyWithMe values (IATA1, IATA2, p, 1000-p, q);
+	end loop;
+end loop;
+end;
+
+-- Actualitzar estadístiques
+DECLARE
+esquema VARCHAR2(100);
+CURSOR c IS SELECT TABLE_NAME FROM USER_TABLES WHERE TABLE_NAME NOT LIKE 'SHADOW_%';
+BEGIN
+SELECT '"'||sys_context('USERENV', 'CURRENT_SCHEMA')||'"' INTO esquema FROM dual;
+FOR taula IN c LOOP
+  DBMS_STATS.GATHER_TABLE_STATS( 
+    ownname => esquema, 
+    tabname => taula.table_name, 
+    estimate_percent => NULL,
+    method_opt =>'FOR ALL COLUMNS SIZE REPEAT',
+    granularity => 'GLOBAL',
+    cascade => TRUE
+    );
+  END LOOP;
+END;
+
+Solució:
+
+B+ sobre l'atribut price
+
+Ex.3
+
+Donades la taula i les dades al fitxer adjunt, feu el disseny físic de manera que sigui òptima l'execució de la consulta següent:
+
+select * from obres o1 where o1.tipus = 1 and o1.zona = 'Ardenya'
+union
+select * from obres o1 where o1.tipus = 2 and o1.zona like 'Vall%'
+union
+select * from obres o1 where o1.tipus = 3;
+
+Es imprescindible que abans d'iniciar la correcció t'aseguris de:
+
+    Només hi ha d'haver al teu espai els objectes corresponents a aquest enunciat.
+    Buidar completament la paperera de reciclatge ("PURGE RECYCLEBIN").
+    Actualitzar les estadísitiques de tots els objectes (fes servir el bloc de codi que tens al fitxer adjunt).
+
+Fitxer adjunt:
+
+create table obres(
+ id  number(8,0),
+ zona char(20) not null,
+ tipus  number(17,0) not null,
+ pressupost number(17, 0) not null,
+ nom char(100),
+ empreses char(250),
+ descripcio char(250),
+ responsables char(250)
+);
+
+DECLARE id int;
+pn int;
+i int;
+nz INT;
+zona CHAR(19);
+tipus INT;
+
+begin
+pn:= 1;
+for i in 1..1000 loop
+	if (pn = 1) then 
+		id := i;
+	else
+		id := 1002 - i;
+	END if;
+	nz := (id - 1) Mod 10 + 1;
+	tipus := (id - 1) mod 200 + 1;
+	if (nz = 1) then zona := 'Baix Llobregat'; END if;
+	if (nz = 2) then zona := 'Barcelona'; END if;
+	if (nz = 3) then zona := 'Baix Vallès'; END if;
+	if (nz = 4) then zona := 'Baix Montseny'; END if;
+	if (nz = 5) then zona := 'Vallès Orient'; END if;
+	if (nz = 6) then zona := 'Vallès Occident'; END if;
+	if (nz = 7) then zona := 'Moianès'; END if;
+	if (nz = 8) then zona := 'Segarra'; END if;
+	if (nz = 9) then zona := 'Gavarres'; END if;
+	if (nz = 10) then zona := 'Ardenya'; END if;
+	insert into obres values (id, zona, tipus, 1000 + i, 'n' || id, 'emp' || id, 'descr' || id, 'resp' || id);
+	pn:=pn * (-1);
+end loop;
+end;
+
+-- Actualitzar estadístiques
+DECLARE
+esquema VARCHAR2(100);
+CURSOR c IS SELECT TABLE_NAME FROM USER_TABLES WHERE TABLE_NAME NOT LIKE 'SHADOW_%';
+BEGIN
+SELECT '"'||sys_context('USERENV', 'CURRENT_SCHEMA')||'"' INTO esquema FROM dual;
+FOR taula IN c LOOP
+  DBMS_STATS.GATHER_TABLE_STATS( 
+    ownname => esquema, 
+    tabname => taula.table_name, 
+    estimate_percent => NULL,
+    method_opt =>'FOR ALL COLUMNS SIZE REPEAT',
+    granularity => 'GLOBAL',
+    cascade => TRUE
+    );
+  END LOOP;
+END;
+
+Solució:
+
+Hash sobre l'atribut tipus
