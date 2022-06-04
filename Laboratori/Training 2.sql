@@ -124,3 +124,4 @@ CREATE TABLE Sortida
 CONSTRAINT SortidesSOnACalendari FOREIGN KEY (Nom, Ident, Data) REFERENCES calendari(Nom, Ident, Data),
 CONSTRAINT SortidesSOnATanda FOREIGN KEY (Nom, Ident, Cognom1, Cognom2, NomNoi) REFERENCES membre(Nom, Ident, Cognom1, Cognom2, NomNoi)
 );
+
