@@ -1,0 +1,35 @@
+● Qüestió 1 (33%)
+ 
+Calcula la cardinalitat que trobaràs al fitxer adjunt.
+ 
+Fitxer adjunt:
+ 
+http://i.imgur.com/oYcfuGG.jpg
+ 
+Solució:
+ 
+cardinalitat=3000000
+ 
+● Qüestió 2 (33%)
+ 
+Calcula la cardinalitat que trobaràs al fitxer adjunt.
+ 
+Fitxer adjunt:
+ 
+http://i.imgur.com/HEAfIPE.jpg
+ 
+Solució:
+ 
+cardinalitat=15000
+ 
+● Qüestió 3 (34%)
+ 
+Calcula la cardinalitat que trobaràs al fitxer adjunt.
+ 
+Fitxer adjunt:
+ 
+http://i.imgur.com/6SxDLba.jpg
+ 
+Solució:
+ 
+cardinalitat=1000
