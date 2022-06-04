@@ -1,0 +1,24 @@
+Ex. 1
+Donat les taules i les dades al fitxer adjunt (on també trobaràs les sentències per a mirar el cost de les consultes), fes el disseny físic de la teva base de dades, de manera que sigui òptima l'execució de les comandes següents (la freqüencia d'execució de cadascuna està indicada entre parèntesis):
+(25%) SELECT * FROM empleats WHERE nom=TO_CHAR(LPAD('MMMMMMMMMM',200,'*'));
+(03%) SELECT nom FROM empleats WHERE sou>1000 AND edat<20;
+(25%) SELECT * FROM empleats e, departaments d, seus s WHERE e.dpt=d.id AND d.seu=s.id;
+(47%) SELECT * FROM departaments WHERE seu=4;
+Tingues en compte que només pots utilitzar 1740 blocks d'espai en total.
+
+Solució:
+B+ Empleats(edat)
+Bitmap Departaments(seu)
+
+Ex. 2
+Donades les taules i les dades al fitxer adjunt, feu el disseny físic de la base de dades de manera que sigui òptima l'execució de les comandes següents (la freqüencia d'execució de cadascuna està indicada entre parèntesis):
+(25%) SELECT * FROM empleats e, departaments d WHERE e.dpt = d.id AND sou > 30000;
+(25%) SELECT AVG(sou) FROM empleats WHERE edat > 35;
+(25%) SELECT COUNT(*) FROM empleats WHERE dpt = 4;
+(25%) SELECT * FROM departaments WHERE seu = 2 AND nom > 'CMP';
+Tingueu en compte que només podeu utilitzar 2410 blocs d'espai en total.
+
+Solució:
+B+ Empleats(edat, sou)
+Bitmap Empleats(dpt)
+Bitmap Departaments(seu)
