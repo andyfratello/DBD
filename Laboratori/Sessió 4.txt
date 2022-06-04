@@ -3,3 +3,9 @@ Calcula la cardinalitat i el cost dels algorismes, en segons, per l'arbre de pro
 Fitxer adjunt:
  
 http://i.imgur.com/uqGQu5L.jpg
+
+
+Solució:
+
+cardinalitat=60000
+cost=1180.24
