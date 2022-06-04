@@ -192,6 +192,7 @@ create table domicilis
 nomCarrer char(20),
 numCarrer integer check(numCarrer>0),
 pis char(2),
+
 porta char(2),
 primary key (numTelf));
 
