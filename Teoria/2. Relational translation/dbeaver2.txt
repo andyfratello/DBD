@@ -1,0 +1,17 @@
+DROP TABLE t;
+
+CREATE TABLE t (i integer CHECK (i > 0));
+
+INSERT INTO t values(1);
+INSERT INTO t values(2);
+INSERT INTO t values(null);
+INSERT INTO t values(-1);
+
+
+SELECT * FROM t;
+
+SELECT count (*) FROM t;
+
+SELECT count(i) FROM t;
+
+SELECT count(*) - count(i) FROM t;
